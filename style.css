@@ -1,0 +1,94 @@
+/* tadimadz.com — minimal, in the spirit of patrickcollison.com */
+
+body {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.55;
+  color: #222;
+  background: #fff;
+  max-width: 38em;
+  margin: 0 auto;
+  padding: 3.5em 1.5em 4em;
+}
+
+h1 {
+  font-size: 1.5em;
+  font-weight: 600;
+  margin: 0 0 0.75em;
+}
+
+h2 {
+  font-size: 1.1em;
+  font-weight: 600;
+  margin: 2em 0 0.5em;
+}
+
+a {
+  color: #1a0dab;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+ul {
+  padding-left: 1.4em;
+  margin: 0.5em 0 1.5em;
+}
+
+li {
+  margin: 0.25em 0;
+}
+
+.muted {
+  color: #777;
+}
+
+.small {
+  font-size: 0.85em;
+}
+
+/* Book annotations, Collison-style */
+.great,
+.great a {
+  color: #167d16; /* particularly great — five stars */
+}
+
+.good,
+.good a {
+  color: #2f6f9f; /* substantially above average — four stars */
+}
+
+.stars {
+  color: #b58900;
+  font-size: 0.85em;
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+}
+
+.date {
+  color: #999;
+  font-size: 0.85em;
+}
+
+.source {
+  color: #999;
+  font-size: 0.8em;
+}
+
+nav.top {
+  margin-bottom: 2em;
+}
+
+nav.top a {
+  margin-right: 1em;
+}
+
+footer {
+  margin-top: 4em;
+  padding-top: 1em;
+  border-top: 1px solid #eee;
+  color: #999;
+  font-size: 0.8em;
+}
