@@ -174,7 +174,9 @@ def render_writing(posts):
         except (KeyError, ValueError):
             nice_date = ""
         sub = f' <span class="muted">— {esc(p["subtitle"])}</span>' if p.get("subtitle") else ""
-        items.append(f'  <li><a href="{esc(p["url"])}">{esc(p["title"])}</a>{sub} '
+        title = (f'<a href="{esc(p["url"])}">{esc(p["title"])}</a>' if p.get("url")
+                 else esc(p["title"]))
+        items.append(f'  <li>{title}{sub} '
                      f'<span class="date">{nice_date} · {esc(p["source"])}</span></li>')
     if items:
         body.append("<ul>\n" + "\n".join(items) + "\n</ul>")
