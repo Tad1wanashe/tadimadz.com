@@ -13,6 +13,8 @@ import html
 import json
 import re
 import sys
+import time
+import urllib.error
 import urllib.request
 import xml.etree.ElementTree as ET
 from datetime import datetime, timezone
@@ -27,10 +29,21 @@ SHELVES = ["read", "currently-reading", "to-read"]
 SUBSTACK = "https://tadiwanashe.substack.com"
 
 
-def fetch(url):
-    req = urllib.request.Request(url, headers={"User-Agent": "tadimadz.com sync"})
-    with urllib.request.urlopen(req, timeout=30) as r:
-        return r.read()
+def fetch(url, attempts=3):
+    req = urllib.request.Request(url, headers={
+        "User-Agent": ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+                       "AppleWebKit/537.36 (KHTML, like Gecko) "
+                       "Chrome/126.0.0.0 Safari/537.36"),
+        "Accept": "*/*",
+    })
+    for attempt in range(attempts):
+        try:
+            with urllib.request.urlopen(req, timeout=30) as r:
+                return r.read()
+        except (urllib.error.URLError, OSError):
+            if attempt == attempts - 1:
+                raise
+            time.sleep(3 * (attempt + 1))
 
 
 def fetch_goodreads():
@@ -172,14 +185,21 @@ def render_writing(posts):
 def main():
     offline = "--offline" in sys.argv
 
-    if offline:
-        shelves = json.loads((DATA / "books.json").read_text())
-        substack = json.loads((DATA / "substack_posts.json").read_text())
-    else:
-        shelves = fetch_goodreads()
-        substack = fetch_substack()
-        (DATA / "books.json").write_text(json.dumps(shelves, indent=1), encoding="utf-8")
-        (DATA / "substack_posts.json").write_text(json.dumps(substack, indent=1), encoding="utf-8")
+    def load_or_fetch(name, fetcher, snapshot):
+        """Fetch fresh data; on any failure fall back to the committed snapshot."""
+        if offline:
+            return json.loads((DATA / snapshot).read_text())
+        try:
+            data = fetcher()
+        except Exception as e:  # a blocked source must not break the whole build
+            print(f"WARNING: {name} fetch failed ({e}); using committed snapshot",
+                  file=sys.stderr)
+            return json.loads((DATA / snapshot).read_text())
+        (DATA / snapshot).write_text(json.dumps(data, indent=1), encoding="utf-8")
+        return data
+
+    shelves = load_or_fetch("goodreads", fetch_goodreads, "books.json")
+    substack = load_or_fetch("substack", fetch_substack, "substack_posts.json")
 
     medium = json.loads((DATA / "medium.json").read_text())
     for p in substack:
